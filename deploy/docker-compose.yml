@@ -1,0 +1,64 @@
+# Longhouse on the Valheim host, reached through a Cloudflare Tunnel.
+# Runs next to a Valheim container (MrGuato/Valheim_Game_Server or lloesche/valheim-server).
+# The dashboard only listens on localhost; the tunnel is the way in.
+#
+#   cp .env.example .env
+#   docker compose up -d                     # cloudflared already runs on the host
+#   docker compose --profile tunnel up -d    # or run cloudflared here (set TUNNEL_TOKEN)
+
+services:
+  longhouse:
+    image: ghcr.io/mrguato/valheim-game-dashboard:${LONGHOUSE_TAG:-latest}
+    container_name: longhouse
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DOCKER_HOST: tcp://docker-proxy:2375
+    extra_hosts:
+      # lets the collector reach the game's Steam query port published on the host
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${LONGHOUSE_BIND:-127.0.0.1:8080}:8080"
+    volumes:
+      - longhouse-data:/data
+      # Valheim before 1.0 saved worlds as <World>.db; mount the folder to read the clock and bosses:
+      # - /path/to/config/worlds_local:/valheim/worlds_local:ro
+    depends_on:
+      - docker-proxy
+    networks:
+      - longhouse
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+
+  # Read-only window onto Docker: container state and logs, nothing else.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:latest
+    container_name: longhouse-docker-proxy
+    restart: unless-stopped
+    environment:
+      CONTAINERS: 1
+      POST: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - longhouse
+
+  # Only with --profile tunnel. Its public hostname should point at http://longhouse:8080
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: longhouse-tunnel
+    restart: unless-stopped
+    profiles: ["tunnel"]
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      - longhouse
+    networks:
+      - longhouse
+
+volumes:
+  longhouse-data: {}
+
+networks:
+  longhouse: {}
