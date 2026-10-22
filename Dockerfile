@@ -15,7 +15,11 @@ COPY server/ ./server/
 COPY index.html docs.html ./
 COPY assets/ ./assets/
 
+# npm, yarn and corepack aren't needed at runtime and carry most of the base image's CVEs
 RUN rm -rf ./server/test \
+      /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+      /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+      /usr/local/bin/yarn /usr/local/bin/yarnpkg /opt/yarn-* \
  && mkdir -p /data \
  && chown node:node /data
 
