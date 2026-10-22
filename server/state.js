@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { raidName } from "./logparse.js";
+import { appearanceFrom, biomeFrom, equipmentFrom, killsFrom } from "./mods.js";
 
 const KEEP_MS = 35 * 86400 * 1000; // sessions and deaths kept for the heatmap and weekly numbers
 const ACTIVITY_MAX = 60;
@@ -25,7 +26,8 @@ const emptyState = () => ({
   activity: [],
   bossesSeen: {},
   pending: [],
-  idToName: {}
+  idToName: {},
+  plugin: null // { version, ts } once the Longhouse server plugin has said hello
 });
 
 const fmtDuration = (ms) => {
@@ -166,8 +168,54 @@ export class State {
       case "clock":
         d.clock = { time: ev.time, ts };
         break;
+      case "longhouse":
+        this.applyMod(ev.data, ts);
+        break;
       default:
         this.dirty = false;
+    }
+  }
+
+  // "LH1" lines from the server plugin: what it can see of each connected player, the kills
+  // it counted since the last line, and how many building pieces each player has standing.
+  applyMod(m, ts) {
+    const d = this.data;
+    const nameOf = (v) => (typeof v === "string" ? v.trim().slice(0, 40) : "");
+    if (m.t === "hello") {
+      d.plugin = { version: typeof m.plugin === "string" ? m.plugin.slice(0, 20) : null, ts };
+      return;
+    }
+    if (m.t === "pieces") {
+      if (!Array.isArray(m.counts)) { this.dirty = false; return; }
+      for (const r of m.counts.slice(0, 200)) {
+        const name = Array.isArray(r) ? nameOf(r[0]) : "";
+        if (!name || typeof r[1] !== "number") continue;
+        this.player(name).pieces = Math.max(0, Math.round(r[1]));
+      }
+      return;
+    }
+    const name = nameOf(m.name);
+    if (!name) { this.dirty = false; return; }
+    const p = this.player(name);
+    if (m.t === "player") {
+      p.live = {
+        ts,
+        biome: biomeFrom(m.biome),
+        place: m.place === "dungeon" ? "dungeon" : null,
+        hp: Array.isArray(m.hp) && m.hp.length === 2 ? m.hp.map((n) => Math.max(0, Math.round(Number(n) || 0))) : null,
+        sleeping: m.sleeping === true
+      };
+      // the look and gear stay after they log off, so the figure isn't blank
+      const look = appearanceFrom(m.look);
+      if (look) p.appearance = look;
+      const gear = equipmentFrom(m.gear);
+      if (gear) p.equipment = gear;
+    } else if (m.t === "tally") {
+      p.kills ||= {};
+      for (const [mob, n] of Object.entries(killsFrom(m.kills))) p.kills[mob] = (p.kills[mob] || 0) + n;
+      p.bossKills = (p.bossKills || 0) + Math.max(0, Math.round(Number(m.bosses) || 0));
+    } else {
+      this.dirty = false;
     }
   }
 

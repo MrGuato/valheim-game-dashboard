@@ -11,3 +11,9 @@ snapshot.json
 node_modules/
 .DS_Store
 Thumbs.db
+
+# game and BepInEx assemblies used to build mods/ (not redistributable)
+.refs/
+mods/**/bin/
+mods/**/obj/
+mods/out/
