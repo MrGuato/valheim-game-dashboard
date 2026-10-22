@@ -1,0 +1,28 @@
+<Project>
+  <!--
+    Both mods compile against the game's own assemblies, which can't be redistributed.
+    Point ValheimManaged at <Valheim or valheim_server>/valheim(_server)_Data/Managed and
+    BepInExCore at BepInEx/core from BepInExPack_Valheim (see mods/README.md).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Deterministic>true</Deterministic>
+    <ValheimManaged Condition="'$(ValheimManaged)' == ''">$(MSBuildThisFileDirectory)../.refs/managed</ValheimManaged>
+    <BepInExCore Condition="'$(BepInExCore)' == ''">$(MSBuildThisFileDirectory)../.refs/bepinex</BepInExCore>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared/*.cs" />
+    <Reference Include="$(ValheimManaged)/assembly_valheim.dll" Private="false" />
+    <Reference Include="$(ValheimManaged)/assembly_utils.dll" Private="false" />
+    <Reference Include="$(ValheimManaged)/assembly_guiutils.dll" Private="false" />
+    <Reference Include="$(ValheimManaged)/UnityEngine.dll" Private="false" />
+    <Reference Include="$(ValheimManaged)/UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(BepInExCore)/BepInEx.dll" Private="false" />
+  </ItemGroup>
+</Project>

@@ -27,7 +27,16 @@ const PATTERNS = [
   ["saved", /World save \(\d+\/\d+\) done/, () => ({})], // 1.0+
   // the in-game clock, logged when everyone sleeps: "Time 439251.2, day:243    nextm:439470.0"
   // (the "World time" in autobackup lines is seconds since the process started, not the game clock)
-  ["clock", /\bTime ([\d.]+), day:\d+(?:\s+nextm:([\d.]+))?/, (m) => ({ time: Number(m[2] || m[1]) })]
+  ["clock", /\bTime ([\d.]+), day:\d+(?:\s+nextm:([\d.]+))?/, (m) => ({ time: Number(m[2] || m[1]) })],
+  // the Longhouse server plugin (mods/Longhouse.Server): "LH1 {json}"
+  ["longhouse", /\bLH1 (\{.*\})\s*$/, (m) => {
+    try {
+      const data = JSON.parse(m[1]);
+      return data && typeof data === "object" && typeof data.t === "string" ? { data } : null;
+    } catch {
+      return null;
+    }
+  }]
 ];
 
 export function parseLine(raw) {
@@ -36,7 +45,9 @@ export function parseLine(raw) {
   for (const [type, re, build] of PATTERNS) {
     const m = line.match(re);
     if (!m) continue;
-    const ev = { type, ...build(m) };
+    const built = build(m);
+    if (!built) return null;
+    const ev = { type, ...built };
     if (type === "character") return { type: ev.dead ? "death" : "spawn", name: ev.name };
     return ev;
   }

@@ -45,7 +45,7 @@
 
   const BIOMES = {
     meadows: "Meadows", blackforest: "Black Forest", swamp: "Swamp", mountain: "Mountain",
-    plains: "Plains", mistlands: "Mistlands", ashlands: "Ashlands", ocean: "Ocean"
+    plains: "Plains", mistlands: "Mistlands", ashlands: "Ashlands", deepnorth: "Deep North", ocean: "Ocean"
   };
   const biomeTag = (b) =>
     `<span class="biome"><span class="dot" style="background:var(--b-${esc(b)})"></span>${esc(BIOMES[b] || b)}</span>`;
@@ -322,7 +322,7 @@
     if (data.materials) renderBars($("materials"), data.materials, { unit: "gathered", withBiome: true });
     if (!data.mobs) return;
 
-    const biomes = [...new Set(data.mobs.map((m) => m[2]))];
+    const biomes = [...new Set(data.mobs.map((m) => m[2]).filter(Boolean))];
     if (mobFilter !== "all" && !biomes.includes(mobFilter)) mobFilter = "all";
     $("mobTotal").textContent = `${fmt(data.mobs.reduce((s, m) => s + m[1], 0))} total`;
     $("mobFilter").innerHTML =

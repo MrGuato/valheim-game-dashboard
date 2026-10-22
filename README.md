@@ -24,7 +24,7 @@ A little dashboard for a Valheim dedicated server. I run a server for family and
 - A "when do we play" heatmap and a feed of joins, leaves, deaths and raids
 - Boss progress
 
-Some of the profile stuff (gear, food, skills) needs a mod that doesn't exist yet. Without it you get the vanilla stats above and the character figures stay grey.
+Some of the profile stuff needs mods from [`mods/`](mods/README.md): a server plugin for biome, character figure and gear, and an opt-in companion mod for food, skills and lifetime stats. Without them you get the vanilla stats above and the character figures stay grey. The companion mod needs BepInEx on the player's PC, which turns Valheim's achievements off while it's installed; the server plugin doesn't affect anyone's achievements.
 
 ## Running it
 

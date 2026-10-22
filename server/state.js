@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { raidName } from "./logparse.js";
+import { appearanceFrom, biomeFrom, decodeCompanion, equipmentFrom } from "./mods.js";
 
 const KEEP_MS = 35 * 86400 * 1000; // sessions and deaths kept for the heatmap and weekly numbers
 const ACTIVITY_MAX = 60;
@@ -25,7 +26,8 @@ const emptyState = () => ({
   activity: [],
   bossesSeen: {},
   pending: [],
-  idToName: {}
+  idToName: {},
+  plugin: null // { version, ts } once the Longhouse server plugin has said hello
 });
 
 const fmtDuration = (ms) => {
@@ -166,8 +168,44 @@ export class State {
       case "clock":
         d.clock = { time: ev.time, ts };
         break;
+      case "longhouse":
+        this.applyMod(ev.data, ts);
+        break;
       default:
         this.dirty = false;
+    }
+  }
+
+  // "LH1" lines from the server plugin: what it can see of each connected player, and the
+  // stats players' companion mods sent it. Names come from the server, never the client.
+  applyMod(m, ts) {
+    const d = this.data;
+    if (m.t === "hello") {
+      d.plugin = { version: typeof m.plugin === "string" ? m.plugin.slice(0, 20) : null, ts };
+      return;
+    }
+    const name = typeof m.name === "string" ? m.name.trim().slice(0, 40) : "";
+    if (!name) { this.dirty = false; return; }
+    const p = this.player(name);
+    if (m.t === "player") {
+      p.live = {
+        ts,
+        biome: biomeFrom(m.biome),
+        place: m.place === "dungeon" ? "dungeon" : null,
+        hp: Array.isArray(m.hp) && m.hp.length === 2 ? m.hp.map((n) => Math.max(0, Math.round(Number(n) || 0))) : null,
+        sleeping: m.sleeping === true
+      };
+      // the look and gear stay after they log off, so the figure isn't blank
+      const look = appearanceFrom(m.look);
+      if (look) p.appearance = look;
+      const gear = equipmentFrom(m.gear);
+      if (gear) p.equipment = gear;
+    } else if (m.t === "stats") {
+      const c = decodeCompanion(m.b64);
+      if (c) p.companion = { ts, ...c };
+      else this.dirty = false;
+    } else {
+      this.dirty = false;
     }
   }
 

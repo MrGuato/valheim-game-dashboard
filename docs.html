@@ -76,7 +76,7 @@
 
       <div class="callout tip" style="margin-top:24px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-        <p><strong>Status:</strong> the dashboard, collector and Docker image work with a vanilla server today. The server plugin and companion mod (tiers 1 and 2 below) don't exist yet, and the parts that need them say so. The public preview runs on invented mock data.</p>
+        <p><strong>Status:</strong> the dashboard, collector and Docker image work with a vanilla server today. The server plugin and companion mod (tiers 1 and 2 below) are in <code>mods/</code> since 0.2.0; see <a href="https://github.com/MrGuato/valheim-game-dashboard/tree/main/mods">mods/README.md</a> to install them. The public preview runs on invented mock data.</p>
       </div>
 
       <!-- features -->
@@ -191,10 +191,11 @@ Got character ZDOID from Leif : 0:0</pre>
         <p>Log formats can change between game updates, so patterns live in one file and are covered by tests.</p>
 
         <h3>Tier 1 · server plugin <span class="tier t1">Optional</span></h3>
-        <p><span class="badge accent">Planned</span> A small BepInEx plugin installed only on the server. It reads what the server already knows about connected players: which biome each player is in, their appearance (hair, beard, skin) and their visible equipment, which is what the character figures are drawn from. Players don't need to install anything.</p>
+        <p><span class="badge good">Available</span> A small BepInEx plugin installed only on the server. It reads what the server already knows about connected players: which biome each player is in (or that they're in a dungeon or asleep), their appearance (body, skin, hair, beard), their visible equipment and their health, which is what the character figures are drawn from. It writes one <code>LH1 {json}</code> line per player to the server log, which the collector already follows. Players don't need to install anything, and it has no effect on their achievements.</p>
 
         <h3>Tier 2 · companion mod <span class="tier t2">Opt-in per player</span></h3>
-        <p><span class="badge accent">Planned</span> Food buffs, skill levels, materials picked up and lifetime stats (kills per creature, crafts, builds, jumps) are stored in each player's character file on their own PC. Players who want them on the dashboard install a lightweight client mod that posts their stats to the collector with a personal token. Anyone who skips it still shows up with Tier 0 and Tier 1 data.</p>
+        <p><span class="badge good">Available</span> Food buffs, skill levels, materials picked up and lifetime stats (kills per creature, crafts, builds, jumps) are stored in each player's character file on their own PC. Players who want them on the dashboard install a lightweight client mod that sends a summary once a minute over the game connection to the server plugin, which logs it under the name of the connection it came from. Anyone who skips it still shows up with Tier 0 and Tier 1 data.</p>
+        <p><strong>Achievements:</strong> Valheim 1.0 turns achievements off while a game is modded, and the BepInEx loader for Valheim marks every modded game that way. So a player running the companion mod (or any BepInEx mod) can't earn achievements until they remove BepInEx. Lifetime stats keep counting either way.</p>
       </section>
 
       <!-- tracked -->
@@ -210,7 +211,7 @@ Got character ZDOID from Leif : 0:0</pre>
               <tr><td>World day, time of day</td><td>Server log (1.0) or world save</td><td><span class="tier t0">Vanilla</span></td></tr>
               <tr><td>Boss progression</td><td>Pre-1.0 world save, or set by hand</td><td><span class="tier t0">Vanilla</span></td></tr>
               <tr><td>Playtime, sessions, longest session</td><td>Server log</td><td><span class="tier t0">Vanilla</span></td></tr>
-              <tr><td>Weather, current biome</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
+              <tr><td>Current biome, in a dungeon, asleep, health</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
               <tr><td>Character figure, equipped gear</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
               <tr><td>Health, stamina, eitr, active food</td><td>Player's game</td><td><span class="tier t2">Companion</span></td></tr>
               <tr><td>Skills, kills per creature, crafts, builds</td><td>Player's character stats</td><td><span class="tier t2">Companion</span></td></tr>
@@ -316,7 +317,7 @@ git check-ignore .env data/</pre>
   <span class="k">"heatmap"</span>:   [ [0, 0, 1, …] ],   <span class="c">// 7 days × 24 hours, avg players</span>
   <span class="k">"activity"</span>:  [ { <span class="k">"m"</span>: 6, <span class="k">"type"</span>: <span class="s">"join"</span>, <span class="k">"text"</span>: <span class="s">"**Sigrid** joined the server"</span> } ]
 }</pre>
-        <p>Fields that a tier doesn't provide are left out. Biome ids are <code>meadows</code>, <code>blackforest</code>, <code>swamp</code>, <code>mountain</code>, <code>plains</code>, <code>mistlands</code>, <code>ashlands</code> and <code>ocean</code>. Activity text supports <code>**bold**</code> only; everything else is escaped.</p>
+        <p>Fields that a tier doesn't provide are left out. Biome ids are <code>meadows</code>, <code>blackforest</code>, <code>swamp</code>, <code>mountain</code>, <code>plains</code>, <code>mistlands</code>, <code>ashlands</code>, <code>deepnorth</code> and <code>ocean</code>. Activity text supports <code>**bold**</code> only; everything else is escaped.</p>
       </section>
 
       <!-- customize -->
@@ -355,8 +356,9 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
           <li><span class="badge good">Done</span><span>Dashboard with armory-style profiles, light and dark themes, docs</span></li>
           <li><span class="badge good">Done</span><span>Collector: Docker log following, Steam query, world clock and boss keys, history</span></li>
           <li><span class="badge good">Done</span><span>Multi-arch Docker image on GitHub Container Registry, Cloudflare Tunnel deploy</span></li>
-          <li><span class="badge accent">Next</span><span>Server plugin (Tier 1) for biome, appearance and gear</span></li>
-          <li><span class="badge">Planned</span><span>Companion mod (Tier 2) for food, skills and lifetime stats</span></li>
+          <li><span class="badge good">Done</span><span>Server plugin (Tier 1) for biome, appearance and gear</span></li>
+          <li><span class="badge good">Done</span><span>Companion mod (Tier 2) for food, skills and lifetime stats</span></li>
+          <li><span class="badge accent">Next</span><span>Weather per player</span></li>
           <li><span class="badge">Idea</span><span>In-game portrait renders uploaded by the companion mod</span></li>
           <li><span class="badge">Idea</span><span>Discord webhook for boss kills, deaths and raids</span></li>
         </ul>
@@ -383,7 +385,7 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
         </details>
         <details>
           <summary>Can players fake their stats?</summary>
-          <p>Companion data is self-reported, so a determined player could. Each player gets their own token, which you can revoke. For a group of friends that's usually plenty.</p>
+          <p>Companion data is self-reported, so a determined player could inflate their own numbers. They can't post as someone else: the name comes from the game connection the stats arrive on, and the collector clamps every value. For a group of friends that's usually plenty, and <code>AcceptCompanionStats = false</code> on the server turns it off.</p>
         </details>
         <details>
           <summary>Does it run on Windows?</summary>

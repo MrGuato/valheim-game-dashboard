@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Longhouse.Server</AssemblyName>
+    <RootNamespace>Longhouse</RootNamespace>
+    <Version>0.2.0</Version>
+  </PropertyGroup>
+</Project>
