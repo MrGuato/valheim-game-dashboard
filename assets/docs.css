@@ -11,6 +11,7 @@
 
 .doc { padding: 40px 0 24px; min-width: 0; max-width: 760px; }
 .doc-hero { padding-bottom: 28px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.doc-logo { display: block; width: 72px; height: 72px; margin-bottom: 18px; border-radius: 18px; box-shadow: var(--shadow-lg); }
 .doc-hero h1 { font-size: 40px; line-height: 1.1; letter-spacing: -.035em; font-weight: 720; margin: 10px 0 12px; }
 .doc-hero p.lead { font-size: 17px; line-height: 1.6; color: var(--text-2); margin: 0 0 20px; }
 .doc-hero .actions { display: flex; flex-wrap: wrap; gap: 10px; }

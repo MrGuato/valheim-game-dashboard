@@ -147,8 +147,7 @@ button { font: inherit; color: inherit; }
   height: 60px; display: flex; align-items: center; gap: 24px;
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 650; letter-spacing: -.01em; font-size: 15px; }
-.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--text); color: var(--bg); display: grid; place-items: center; }
-.brand-mark svg { width: 16px; height: 16px; }
+.brand-mark { width: 28px; height: 28px; border-radius: 8px; display: block; }
 .nav { display: flex; gap: 2px; margin-left: 8px; }
 .nav a {
   text-decoration: none; color: var(--text-2); padding: 6px 10px; border-radius: 8px; font-weight: 500;
