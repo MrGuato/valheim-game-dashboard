@@ -32,8 +32,10 @@ The plugin can't affect anyone's achievements. Valheim decides those on each pla
 ### MrGuato/Valheim_Game_Server or lloesche/valheim-server
 
 1. Set `BEPINEX=true` in the server's `.env` and recreate the container (`docker compose up -d`).
-2. Copy `Longhouse.Server.dll` to `config/bepinex/plugins/` and restart the container.
-3. The server log shows `LH1 {"t":"hello","plugin":"0.3.0"}` once the world has loaded.
+2. Stop the server (`docker compose stop valheim`), copy `Longhouse.Server.dll` to `config/bepinex/plugins/`, then start it again (`docker compose start valheim`).
+3. The server log shows `LH1 {"t":"hello","plugin":"0.3.1"}` once the world has loaded.
+
+To update the plugin, do step 2 again. Don't replace the DLL while the server is running: the game keeps reading the file it loaded, and when it reaches code it hasn't run yet it reads the new file instead and crashes (`Assertion at metadata.c … heap_blob.size`, exit code 134). Stopping first also makes the server save the world, so nothing is lost.
 
 Settings end up in `config/bepinex/config/com.mrguato.longhouse.server.cfg` (`config/bepinex/com.mrguato.longhouse.server.cfg` with lloesche) after the first start: `ScanSeconds` (default 30) and `PiecesMinutes` (default 10, 0 turns piece counting off).
 
