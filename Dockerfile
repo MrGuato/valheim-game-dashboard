@@ -1,5 +1,5 @@
 # Longhouse: Valheim server dashboard + collector. No npm dependencies.
-FROM node:22-alpine
+FROM node:25-alpine
 
 LABEL org.opencontainers.image.source="https://github.com/MrGuato/valheim-game-dashboard" \
       org.opencontainers.image.description="Longhouse: a clean, self-hosted dashboard for your Valheim dedicated server" \
