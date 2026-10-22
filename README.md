@@ -1,3 +1,14 @@
+[![Made With Love](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F-by%20Jonathan-red)](https://github.com/MrGuato)
+[![Build and Publish](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/build.yml/badge.svg)](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/build.yml)
+[![Lint](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/lint.yml/badge.svg)](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/lint.yml)
+[![CodeQL](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/codeql.yml/badge.svg)](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/codeql.yml)
+[![Security](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/security.yml/badge.svg)](https://github.com/MrGuato/valheim-game-dashboard/actions/workflows/security.yml)
+[![Release](https://img.shields.io/github/v/release/MrGuato/valheim-game-dashboard)](https://github.com/MrGuato/valheim-game-dashboard/releases)
+[![GHCR](https://img.shields.io/badge/GHCR-container%20image-blue)](https://github.com/MrGuato/valheim-game-dashboard/pkgs/container/valheim-game-dashboard)
+[![Last Commit](https://img.shields.io/github/last-commit/MrGuato/valheim-game-dashboard)](https://github.com/MrGuato/valheim-game-dashboard/commits/main)
+
+<p align="center"><img src="assets/logo.svg" width="110" alt="Longhouse logo"></p>
+
 # Longhouse
 
 A little dashboard for a Valheim dedicated server. I run a server for family and friends and wanted one page where everyone can see who's on, what day it is in-game, who's been playing the most and who keeps dying.

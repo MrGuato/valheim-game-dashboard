@@ -1,6 +1,6 @@
 {
   "name": "longhouse",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "private": true,
   "description": "A clean, self-hosted dashboard for your Valheim dedicated server.",
   "type": "module",
