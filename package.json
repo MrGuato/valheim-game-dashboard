@@ -1,0 +1,13 @@
+{
+  "name": "longhouse",
+  "version": "0.2.0",
+  "private": true,
+  "description": "A clean, self-hosted dashboard for your Valheim dedicated server.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test server/test/*.test.js"
+  },
+  "license": "MIT"
+}
