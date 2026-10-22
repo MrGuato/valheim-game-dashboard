@@ -1,7 +1,7 @@
 // Builds the JSON document the dashboard renders (schema documented in docs.html#schema).
 import { hashId } from "./state.js";
 import { BOSSES, clockAt } from "./world.js";
-import { materialBiome, mobBiome } from "./mods.js";
+import { mobBiome } from "./mods.js";
 
 const HOUR = 3600 * 1000, DAY = 24 * HOUR, WEEK = 7 * DAY;
 const LIVE_MS = 10 * 60 * 1000; // plugin readings older than this are stale
@@ -113,8 +113,6 @@ export function buildSnapshot({ state, config, a2s, a2sEverAnswered = false, con
   const players = Object.values(d.players).filter((p) => visible(p.name)).map((p) => {
     const openMs = p.online && p.sessionStart ? now - Date.parse(p.sessionStart) : 0;
     const live = p.online && fresh(p.live) ? p.live : null;
-    const c = p.companion || null;
-    const cLive = p.online && fresh(c) ? c : null;
     const out = {
       id: hashId("player:" + p.name).slice(0, 10),
       name: p.name,
@@ -128,7 +126,7 @@ export function buildSnapshot({ state, config, a2s, a2sEverAnswered = false, con
         longestSessionMinutes: Math.round(Math.max(p.longestSeconds * 1000, openMs) / 60000)
       }
     };
-    // Tier 1: server plugin
+    // look, gear and whereabouts from the server plugin
     if (p.appearance) out.appearance = p.appearance;
     if (p.equipment) out.equipment = p.equipment;
     if (live) {
@@ -137,35 +135,26 @@ export function buildSnapshot({ state, config, a2s, a2sEverAnswered = false, con
       else if (live.sleeping) out.location = "Asleep";
       if (live.hp) out.vitals = { hp: live.hp };
     }
-    // Tier 2: companion mod. Lifetime stats are the character's own, across every world it has visited.
-    if (c) {
-      out.skills = c.skills.slice(0, 5);
-      const { deaths, ...lifetime } = c.stats;
-      Object.assign(out.stats, lifetime);
-      if (c.mobs.length) out.topKill = c.mobs[0][0];
-      if (c.foodsEaten.length) out.favoriteFood = c.foodsEaten[0][0];
-      out.companion = true;
+    // kills and pieces the plugin counted (since it was installed, not the character's lifetime)
+    if (p.kills) {
+      const ranked = Object.entries(p.kills).sort((a, b) => b[1] - a[1]);
+      out.stats.kills = ranked.reduce((t, [, n]) => t + n, 0);
+      out.stats.bossKills = p.bossKills || 0;
+      if (ranked.length) out.topKill = ranked[0][0];
     }
-    if (cLive) {
-      out.vitals = cLive.vitals;
-      out.foods = cLive.foods;
-      out.rested = cLive.rested;
-      out.comfort = cLive.comfort;
-    }
+    if (typeof p.pieces === "number") out.stats.piecesStanding = p.pieces;
     return out;
   });
 
-  // ---- world stats, added up from everyone running the companion mod
-  const sum = (key, biomeOf) => {
-    const totals = new Map();
-    for (const p of Object.values(d.players)) {
-      if (!visible(p.name) || !p.companion) continue;
-      for (const [name, n] of p.companion[key]) totals.set(name, (totals.get(name) || 0) + n);
-    }
-    if (!totals.size) return undefined;
-    return [...totals].sort((a, b) => b[1] - a[1]).slice(0, 24).map(([name, n]) => (biomeOf ? [name, n, biomeOf(name)] : [name, n]));
-  };
-  const foods = sum("foodsEaten"), materials = sum("materials", materialBiome), mobs = sum("mobs", mobBiome);
+  // ---- creatures slain on this server, added up from the plugin's tallies
+  const mobTotals = new Map();
+  for (const p of Object.values(d.players)) {
+    if (!visible(p.name) || !p.kills) continue;
+    for (const [mob, n] of Object.entries(p.kills)) mobTotals.set(mob, (mobTotals.get(mob) || 0) + n);
+  }
+  const mobs = mobTotals.size
+    ? [...mobTotals].sort((a, b) => b[1] - a[1]).slice(0, 24).map(([name, n]) => [name, n, mobBiome(name)])
+    : undefined;
 
   // ---- heatmap: average players online per weekday/hour over the last 4 weeks
   const heatmap = WEEKDAYS.map(() => new Array(24).fill(0));
@@ -198,8 +187,6 @@ export function buildSnapshot({ state, config, a2s, a2sEverAnswered = false, con
     players,
     heatmap,
     activity,
-    foods,
-    materials,
     mobs,
     mods: { serverPlugin: d.plugin ? d.plugin.version : null }
   };

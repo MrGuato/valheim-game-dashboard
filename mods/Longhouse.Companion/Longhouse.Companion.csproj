@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>Longhouse.Companion</AssemblyName>
-    <RootNamespace>Longhouse</RootNamespace>
-    <Version>0.2.0</Version>
-  </PropertyGroup>
-</Project>

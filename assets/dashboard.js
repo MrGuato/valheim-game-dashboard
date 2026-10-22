@@ -196,6 +196,7 @@
       has(st.kills) && ["Kills", fmt(st.kills)],
       has(st.deaths) && ["Deaths", fmt(st.deaths)],
       has(st.built) && ["Pieces built", compact(st.built)],
+      has(st.piecesStanding) && ["Pieces standing", compact(st.piecesStanding)],
       has(st.crafted) && ["Items crafted", fmt(st.crafted)],
       has(st.distanceKm) && ["Distance", `${fmt(st.distanceKm)} <small class="faint">km</small>`],
       has(st.jumps) && ["Jumps", compact(st.jumps)],
@@ -237,29 +238,26 @@
         <div>
           <div class="pf-block">
             <span class="eyebrow">Vitals</span>
-            ${!v ? `<div class="empty">Vitals need the companion mod</div>`
+            ${!v ? `<div class="empty">Health shows with the server plugin</div>`
               : p.online ? vital("Health", v.hp, "var(--hp)") + vital("Stamina", v.stamina, "var(--stamina)") + vital("Eitr", v.eitr, "var(--eitr)")
               : `<div class="empty">Vitals show while ${esc(p.name)} is online</div>`}
           </div>
-          <div class="pf-block">
+          ${p.foods ? `<div class="pf-block">
             <span class="eyebrow">Active food</span>
-            ${!p.foods ? `<div class="empty">Food buffs need the companion mod</div>`
-              : p.foods.length ? p.foods.map((f) => `
+            ${p.foods.length ? p.foods.map((f) => `
               <div class="food">
                 <span class="food-ic ${esc(f.kind)}">${icon(foodIcon[f.kind])}</span>
                 <span style="min-width:0"><span class="fname">${esc(f.name)}</span>
                   <span class="track"><i style="width:${(f.minutesLeft / f.total) * 100}%;background:var(--${f.kind === "hp" ? "hp" : esc(f.kind)})"></i></span></span>
                 <span class="left num">${f.minutesLeft}m</span>
               </div>`).join("") : `<div class="empty">No food buffs active</div>`}
-          </div>
+          </div>` : ""}
         </div>
         <div>
-          <div class="pf-block">
+          ${p.skills && p.skills.length ? `<div class="pf-block">
             <span class="eyebrow">Top skills</span>
-            ${p.skills && p.skills.length
-              ? p.skills.map(([n, lv]) => `<div class="skill"><span>${esc(n)}</span><span class="track"><i style="width:${lv}%"></i></span><span class="v num">${lv}</span></div>`).join("")
-              : `<div class="empty">Skills need the companion mod</div>`}
-          </div>
+            ${p.skills.map(([n, lv]) => `<div class="skill"><span>${esc(n)}</span><span class="track"><i style="width:${lv}%"></i></span><span class="v num">${lv}</span></div>`).join("")}
+          </div>` : ""}
         </div>
       </div>
       ${lifetime.length ? `
@@ -277,6 +275,7 @@
       ["swords", "Most kills", (p) => p.stats && p.stats.kills, (n) => `${fmt(n)} kills`, compact],
       ["skull", "Most trips to Valhalla", (p) => p.stats && p.stats.deaths, (n) => `${fmt(n)} deaths`, compact],
       ["hammer", "Master builder", (p) => p.stats && p.stats.built, (n) => `${fmt(n)} pieces`, compact],
+      ["hammer", "Master builder", (p) => p.stats && p.stats.piecesStanding, (n) => `${fmt(n)} pieces standing`, compact],
       ["compass", "Furthest wanderer", (p) => p.stats && p.stats.distanceKm, (n) => `${fmt(n)} km`, compact],
       ["clock", "Most time in Midgard", (p) => p.stats && p.stats.playtimeHours, (n) => `${fmt(n)} hours played`, (n) => `${n}h`],
       ["calendar", "Longest session", (p) => p.stats && p.stats.longestSessionMinutes, (n) => duration(n * 60), (n) => duration(n * 60)],

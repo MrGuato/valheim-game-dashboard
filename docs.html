@@ -76,7 +76,7 @@
 
       <div class="callout tip" style="margin-top:24px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
-        <p><strong>Status:</strong> the dashboard, collector and Docker image work with a vanilla server today. The server plugin and companion mod (tiers 1 and 2 below) are in <code>mods/</code> since 0.2.0; see <a href="https://github.com/MrGuato/valheim-game-dashboard/tree/main/mods">mods/README.md</a> to install them. The public preview runs on invented mock data.</p>
+        <p><strong>Status:</strong> the dashboard, collector and Docker image work with a vanilla server today. The optional server plugin (tier 1 below) is in <code>mods/</code> since 0.2.0; see <a href="https://github.com/MrGuato/valheim-game-dashboard/tree/main/mods">mods/README.md</a> to install them. The public preview runs on invented mock data.</p>
       </div>
 
       <!-- features -->
@@ -130,11 +130,11 @@ docker compose logs -f longhouse</pre>
       <!-- how it works -->
       <section id="how-it-works">
         <h2>How it works</h2>
-        <p>Valheim keeps most character data (skills, food, lifetime stats) on each player's own machine, not on the server. So Longhouse collects data in three tiers: the more you install, the more the dashboard shows.</p>
+        <p>Longhouse only uses what the server knows. Nothing is installed on players' PCs, so nobody's achievements are affected. There are two tiers: a vanilla server, and the same server with the optional Longhouse plugin.</p>
         <div class="diagram">
-          <svg viewBox="0 0 720 330" role="img" aria-labelledby="dTitle dDesc">
+          <svg viewBox="0 0 720 262" role="img" aria-labelledby="dTitle dDesc">
             <title id="dTitle">Longhouse architecture</title>
-            <desc id="dDesc">The Valheim server's log, Steam query and optional server plugin feed the Longhouse collector, as does an optional player companion mod. The collector writes a snapshot that the static dashboard reads, which your friends open through a password or tunnel.</desc>
+            <desc id="dDesc">The Valheim server's log, Steam query and optional server plugin feed the Longhouse collector. The collector writes a snapshot that the static dashboard reads, which your friends open through a password or tunnel.</desc>
             <defs>
               <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-head" d="M0 0 10 5 0 10z"/></marker>
             </defs>
@@ -152,11 +152,8 @@ docker compose logs -f longhouse</pre>
 
             <rect class="d-key" x="14" y="174" width="202" height="56" rx="10"/>
             <text class="d-title" x="28" y="197">Server plugin · optional</text>
-            <text class="d-sub" x="28" y="215">biome, appearance, gear</text>
+            <text class="d-sub" x="28" y="215">biome, figure, gear, kills</text>
 
-            <rect class="d-key" x="14" y="262" width="202" height="56" rx="10"/>
-            <text class="d-title" x="28" y="285">Companion mod · opt-in</text>
-            <text class="d-sub" x="28" y="303">food, skills, lifetime stats</text>
 
             <rect class="d-dark" x="292" y="104" width="170" height="104" rx="12"/>
             <text class="d-title-inv" x="308" y="132">Longhouse collector</text>
@@ -175,8 +172,6 @@ docker compose logs -f longhouse</pre>
             <path class="d-line" d="M216 66 C 260 66, 250 130, 290 136" marker-end="url(#ah)"/>
             <path class="d-line" d="M216 134 C 250 134, 260 150, 290 154" marker-end="url(#ah)"/>
             <path class="d-line" d="M216 202 C 250 202, 260 176, 290 172" marker-end="url(#ah)"/>
-            <path class="d-line dash" d="M216 290 C 270 290, 270 196, 290 192" marker-end="url(#ah)"/>
-            <text class="d-sub" x="236" y="318">HTTPS + per-player token</text>
             <path class="d-line" d="M462 140 C 500 140, 496 106, 528 106" marker-end="url(#ah)"/>
             <path class="d-line" d="M624 138 L 624 194" marker-end="url(#ah)"/>
           </svg>
@@ -191,11 +186,9 @@ Got character ZDOID from Leif : 0:0</pre>
         <p>Log formats can change between game updates, so patterns live in one file and are covered by tests.</p>
 
         <h3>Tier 1 · server plugin <span class="tier t1">Optional</span></h3>
-        <p><span class="badge good">Available</span> A small BepInEx plugin installed only on the server. It reads what the server already knows about connected players: which biome each player is in (or that they're in a dungeon or asleep), their appearance (body, skin, hair, beard), their visible equipment and their health, which is what the character figures are drawn from. It writes one <code>LH1 {json}</code> line per player to the server log, which the collector already follows. Players don't need to install anything, and it has no effect on their achievements.</p>
+        <p><span class="badge good">Available</span> A small BepInEx plugin installed only on the server. It reads what the server already knows about connected players: which biome each player is in (or that they're in a dungeon or asleep), their appearance (body, skin, hair, beard), their visible equipment and their health, which is what the character figures are drawn from. It also counts kills per player and creature (Valheim marks every creature with the players who hit it) and how many building pieces each player has standing. It writes <code>LH1 {json}</code> lines to the server log, which the collector already follows. Players don't need to install anything, and it has no effect on their achievements.</p>
+        <p>Kills are counted from the day the plugin is installed. Skills, food buffs, crafting and lifetime totals live only in each player's character file on their own PC, so Longhouse doesn't show them. Reading those would need a mod in each player's game, and the Valheim mod loader turns achievements off.</p>
 
-        <h3>Tier 2 · companion mod <span class="tier t2">Opt-in per player</span></h3>
-        <p><span class="badge good">Available</span> Food buffs, skill levels, materials picked up and lifetime stats (kills per creature, crafts, builds, jumps) are stored in each player's character file on their own PC. Players who want them on the dashboard install a lightweight client mod that sends a summary once a minute over the game connection to the server plugin, which logs it under the name of the connection it came from. Anyone who skips it still shows up with Tier 0 and Tier 1 data.</p>
-        <p><strong>Achievements:</strong> Valheim 1.0 turns achievements off while a game is modded, and the BepInEx loader for Valheim marks every modded game that way. So a player running the companion mod (or any BepInEx mod) can't earn achievements until they remove BepInEx. Lifetime stats keep counting either way.</p>
       </section>
 
       <!-- tracked -->
@@ -213,9 +206,9 @@ Got character ZDOID from Leif : 0:0</pre>
               <tr><td>Playtime, sessions, longest session</td><td>Server log</td><td><span class="tier t0">Vanilla</span></td></tr>
               <tr><td>Current biome, in a dungeon, asleep, health</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
               <tr><td>Character figure, equipped gear</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
-              <tr><td>Health, stamina, eitr, active food</td><td>Player's game</td><td><span class="tier t2">Companion</span></td></tr>
-              <tr><td>Skills, kills per creature, crafts, builds</td><td>Player's character stats</td><td><span class="tier t2">Companion</span></td></tr>
-              <tr><td>Materials gathered, food eaten totals</td><td>Player's character stats</td><td><span class="tier t2">Companion</span></td></tr>
+              <tr><td>Kills per creature, boss kills (since the plugin was installed)</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
+              <tr><td>Building pieces standing per player</td><td>Server plugin</td><td><span class="tier t1">Server plugin</span></td></tr>
+              <tr><td>Skills, food, stamina, crafting, lifetime totals</td><td>Only on each player's PC</td><td>Not shown</td></tr>
             </tbody>
           </table>
         </div>
@@ -252,7 +245,7 @@ git check-ignore .env data/</pre>
             </tbody>
           </table>
         </div>
-        <p>Players can also be hidden entirely with <code>LONGHOUSE_HIDDEN_PLAYERS</code>, and the companion mod is always opt-in.</p>
+        <p>Players can also be hidden entirely with <code>LONGHOUSE_HIDDEN_PLAYERS</code>.</p>
       </section>
 
       <!-- config -->
@@ -305,14 +298,10 @@ git check-ignore .env data/</pre>
   <span class="k">"bosses"</span>: [ { <span class="k">"id"</span>: <span class="s">"eikthyr"</span>, <span class="k">"defeated"</span>: true, <span class="k">"day"</span>: 9, <span class="k">"by"</span>: [<span class="s">"Astrid"</span>] } ],
   <span class="k">"players"</span>: [ {
     <span class="k">"name"</span>: <span class="s">"Astrid"</span>, <span class="k">"online"</span>: true, <span class="k">"biome"</span>: <span class="s">"mistlands"</span>,
-    <span class="k">"vitals"</span>: { <span class="k">"hp"</span>: [198, 232], <span class="k">"stamina"</span>: [141, 166], <span class="k">"eitr"</span>: [40, 64] },
-    <span class="k">"foods"</span>: [ { <span class="k">"name"</span>: <span class="s">"Seeker aspic"</span>, <span class="k">"minutesLeft"</span>: 31, <span class="k">"total"</span>: 45, <span class="k">"kind"</span>: <span class="s">"eitr"</span> } ],
+    <span class="k">"vitals"</span>: { <span class="k">"hp"</span>: [198, 232] }, <span class="k">"topKill"</span>: <span class="s">"Greydwarf"</span>,
     <span class="k">"equipment"</span>: { <span class="k">"weapon"</span>: { <span class="k">"name"</span>: <span class="s">"Mistwalker"</span>, <span class="k">"q"</span>: 3 } },
-    <span class="k">"skills"</span>: [ [<span class="s">"Swords"</span>, 74] ],
-    <span class="k">"stats"</span>: { <span class="k">"kills"</span>: 4812, <span class="k">"deaths"</span>: 37, <span class="k">"built"</span>: 2140 }
+    <span class="k">"stats"</span>: { <span class="k">"kills"</span>: 812, <span class="k">"deaths"</span>: 37, <span class="k">"piecesStanding"</span>: 2140 }
   } ],
-  <span class="k">"foods"</span>:     [ [<span class="s">"Lox meat pie"</span>, 812] ],
-  <span class="k">"materials"</span>: [ [<span class="s">"Wood"</span>, 48210, <span class="s">"meadows"</span>] ],
   <span class="k">"mobs"</span>:      [ [<span class="s">"Greydwarf"</span>, 3104, <span class="s">"blackforest"</span>] ],
   <span class="k">"heatmap"</span>:   [ [0, 0, 1, …] ],   <span class="c">// 7 days × 24 hours, avg players</span>
   <span class="k">"activity"</span>:  [ { <span class="k">"m"</span>: 6, <span class="k">"type"</span>: <span class="s">"join"</span>, <span class="k">"text"</span>: <span class="s">"**Sigrid** joined the server"</span> } ]
@@ -357,9 +346,8 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
           <li><span class="badge good">Done</span><span>Collector: Docker log following, Steam query, world clock and boss keys, history</span></li>
           <li><span class="badge good">Done</span><span>Multi-arch Docker image on GitHub Container Registry, Cloudflare Tunnel deploy</span></li>
           <li><span class="badge good">Done</span><span>Server plugin (Tier 1) for biome, appearance and gear</span></li>
-          <li><span class="badge good">Done</span><span>Companion mod (Tier 2) for food, skills and lifetime stats</span></li>
+          <li><span class="badge good">Done</span><span>Kills per creature and pieces standing, counted on the server</span></li>
           <li><span class="badge accent">Next</span><span>Weather per player</span></li>
-          <li><span class="badge">Idea</span><span>In-game portrait renders uploaded by the companion mod</span></li>
           <li><span class="badge">Idea</span><span>Discord webhook for boss kills, deaths and raids</span></li>
         </ul>
       </section>
@@ -369,11 +357,11 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
         <h2>FAQ</h2>
         <details>
           <summary>Do I need mods?</summary>
-          <p>No. Without mods you get status, who's online, sessions, deaths, raids and the heatmap. Gear and world details need the server plugin; food, skills and per-creature kills need the companion mod.</p>
+          <p>No. Without mods you get status, who's online, sessions, deaths, raids and the heatmap. The character figure, gear, biome, health, kills and pieces need the server plugin, which goes on the server only.</p>
         </details>
         <details>
           <summary>Why drawn figures instead of the real 3D models?</summary>
-          <p>Valheim's character models are game assets that can't be redistributed, and there's no public model viewer for them the way there is for some other games. Longhouse draws its own figures from the same appearance and gear data instead. A later companion mod could render each player's actual in-game character to an image and upload it.</p>
+          <p>Valheim's character models are game assets that can't be redistributed, and there's no public model viewer for them the way there is for some other games. Longhouse draws its own figures from the same appearance and gear data instead. </p>
         </details>
         <details>
           <summary>Does it work with crossplay servers?</summary>
@@ -385,7 +373,7 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
         </details>
         <details>
           <summary>Can players fake their stats?</summary>
-          <p>Companion data is self-reported, so a determined player could inflate their own numbers. They can't post as someone else: the name comes from the game connection the stats arrive on, and the collector clamps every value. For a group of friends that's usually plenty, and <code>AcceptCompanionStats = false</code> on the server turns it off.</p>
+          <p>Not through Longhouse. Everything it shows comes from the server's own log and what the server already knows; players don't send anything.</p>
         </details>
         <details>
           <summary>Does it run on Windows?</summary>
