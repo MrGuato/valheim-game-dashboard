@@ -19,7 +19,7 @@ namespace Longhouse
     public class ServerPlugin : BaseUnityPlugin
     {
         public const string Guid = "com.mrguato.longhouse.server";
-        public const string Version = "0.3.0";
+        public const string Version = "0.3.1";
 
         private const float RepeatAfterSeconds = 300f; // unchanged players are re-sent this often
 
@@ -104,11 +104,17 @@ namespace Longhouse
         private void ReportPeer(ZNetPeer peer)
         {
             if (peer == null || !peer.IsReady() || string.IsNullOrEmpty(peer.m_playerName)) return;
-            if (peer.m_playerID != 0) _builderNames[peer.m_playerID] = peer.m_playerName;
 
             var pos = peer.m_refPos;
             var zdo = peer.m_characterID.IsNone() ? null : ZDOMan.instance.GetZDO(peer.m_characterID);
             if (zdo != null) pos = zdo.GetPosition();
+            // the same id the game stamps on every piece this player builds (Piece.SetCreator)
+            var playerId = zdo != null ? zdo.GetLong(ZDOVars.s_playerID) : 0L;
+            if (playerId != 0 && !_builderNames.ContainsKey(playerId))
+            {
+                _builderNames[playerId] = peer.m_playerName;
+                _nextPieces = Mathf.Min(_nextPieces, Time.time + 60f); // first count soon after someone new shows up
+            }
 
             var line = new Json().Str("t", "player").Str("name", peer.m_playerName);
             // dungeons and other interiors sit far above the world

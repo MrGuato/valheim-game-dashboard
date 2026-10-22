@@ -33,7 +33,7 @@ The plugin can't affect anyone's achievements. Valheim decides those on each pla
 
 1. Set `BEPINEX=true` in the server's `.env` and recreate the container (`docker compose up -d`).
 2. Copy `Longhouse.Server.dll` to `config/bepinex/plugins/` and restart the container.
-3. The server log shows `LH1 {"t":"hello","plugin":"0.3.0"}` once the world has loaded.
+3. The server log shows `LH1 {"t":"hello","plugin":"0.3.1"}` once the world has loaded.
 
 Settings end up in `config/bepinex/config/com.mrguato.longhouse.server.cfg` (`config/bepinex/com.mrguato.longhouse.server.cfg` with lloesche) after the first start: `ScanSeconds` (default 30) and `PiecesMinutes` (default 10, 0 turns piece counting off).
 
