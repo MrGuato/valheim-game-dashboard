@@ -1,0 +1,13 @@
+# secrets and server address
+.env
+.env.*
+!.env.example
+
+# real collected data
+data/
+snapshot.json
+
+# local tooling
+node_modules/
+.DS_Store
+Thumbs.db

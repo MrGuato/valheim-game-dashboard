@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Longhouse</title>
+  <meta name="description" content="A clean, self-hosted dashboard for your Valheim dedicated server.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/dashboard.css">
+  <script>
+    try { var t = localStorage.getItem("longhouse-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+        </span>
+        Longhouse
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#overview" aria-current="page">Overview</a>
+        <a href="#vikings">Vikings</a>
+        <a href="#records">Records</a>
+        <a href="#world">World</a>
+        <a href="#activity">Activity</a>
+        <a href="docs.html">Docs</a>
+      </nav>
+      <div class="topbar-right">
+        <span class="badge accent" id="modeBadge">Preview · mock data</span>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- server status -->
+    <section class="section" id="overview">
+      <div class="card hero" id="hero"></div>
+      <div class="card card-pad bosses" id="bossCard">
+        <div class="card-head">
+          <h3>Boss progression</h3>
+          <span class="sub" id="bossSub"></span>
+        </div>
+        <ol class="boss-track" id="bosses"></ol>
+      </div>
+      <div class="grid g-4 kpis" id="kpis"></div>
+    </section>
+
+    <!-- players -->
+    <section class="section" id="vikings">
+      <div class="section-head">
+        <div>
+          <h2>Vikings</h2>
+          <p>Who's out there, what they're wearing and what they ate.</p>
+        </div>
+      </div>
+      <div class="vikings">
+        <div class="card roster" role="listbox" aria-label="Players" id="roster"></div>
+        <div class="card profile" id="profile" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- records -->
+    <section class="section" id="records">
+      <div class="section-head">
+        <div>
+          <h2>Hall of records</h2>
+          <p>Lifetime bragging rights, settled by the numbers.</p>
+        </div>
+      </div>
+      <div class="grid g-4" id="leaders"></div>
+    </section>
+
+    <!-- world stats -->
+    <section class="section" id="world">
+      <div class="section-head">
+        <div>
+          <h2>World stats</h2>
+          <p>Everything eaten, gathered and slain on this world.</p>
+        </div>
+      </div>
+      <div class="grid g-3">
+        <div class="card card-pad" id="foodCard">
+          <div class="card-head"><h3>Most eaten food</h3><span class="sub">servings</span></div>
+          <div class="bars" id="foods"></div>
+        </div>
+        <div class="card card-pad" id="materialCard">
+          <div class="card-head"><h3>Materials gathered</h3><span class="sub">units</span></div>
+          <div class="bars" id="materials"></div>
+        </div>
+        <div class="card card-pad" id="mobCard">
+          <div class="card-head"><h3>Creatures slain</h3><span class="sub" id="mobTotal"></span></div>
+          <div class="chips" id="mobFilter" role="group" aria-label="Filter by biome"></div>
+          <div class="bars" id="mobs"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- activity -->
+    <section class="section" id="activity">
+      <div class="section-head">
+        <div>
+          <h2>Activity</h2>
+          <p>When the longhouse is busiest, and what happened lately.</p>
+        </div>
+      </div>
+      <div class="activity-grid">
+        <div class="card card-pad">
+          <div class="card-head"><h3>When we play</h3><span class="sub">avg players online · last 4 weeks</span></div>
+          <div class="heat" id="heat"></div>
+          <div class="heat-stats" id="heatStats"></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-head"><h3>Recent events</h3><span class="sub">live feed</span></div>
+          <ol class="feed" id="feed"></ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>Longhouse · v0.2 · not affiliated with Iron Gate or Coffee Stain</span>
+      <span><a href="docs.html">Documentation</a></span>
+    </div>
+  </footer>
+
+  <div class="tip" id="tip" role="tooltip"></div>
+
+  <script src="assets/mock-data.js"></script>
+  <script src="assets/figure.js"></script>
+  <script src="assets/dashboard.js"></script>
+</body>
+</html>
