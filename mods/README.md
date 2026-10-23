@@ -29,7 +29,7 @@ The plugin can't affect anyone's achievements. Valheim decides those on each pla
 
 ## Install
 
-### MrGuato/Valheim_Game_Server or lloesche/valheim-server
+### MrGuato/valheim-game-server or lloesche/valheim-server
 
 1. Set `BEPINEX=true` in the server's `.env` and recreate the container (`docker compose up -d`).
 2. Stop the server (`docker compose stop valheim`), copy `Longhouse.Server.dll` to `config/bepinex/plugins/`, then start it again (`docker compose start valheim`).

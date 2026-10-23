@@ -41,7 +41,7 @@ That starts it on `127.0.0.1:8080`. Point a tunnel's public hostname at it (`htt
 
 Image: `ghcr.io/mrguato/valheim-game-dashboard` (amd64 + arm64)
 
-Tested with `lloesche/valheim-server` on Valheim 1.0.20. It should also work with my own [Valheim_Game_Server](https://github.com/MrGuato/Valheim_Game_Server) image.
+Tested on Valheim 1.0.20 with my own [valheim-game-server](https://github.com/MrGuato/valheim-game-server) image and with `lloesche/valheim-server`. The server repo has a [setup page](https://mrguato.github.io/valheim-game-server/dashboard.html) for running the two together.
 
 ## Notes
 
