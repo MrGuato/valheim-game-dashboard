@@ -1,5 +1,5 @@
 # Longhouse on the Valheim host, reached through a Cloudflare Tunnel.
-# Runs next to a Valheim container (MrGuato/Valheim_Game_Server or lloesche/valheim-server).
+# Runs next to the Valheim container from MrGuato/valheim-game-server.
 # The dashboard only listens on localhost; the tunnel is the way in.
 #
 #   cp .env.example .env

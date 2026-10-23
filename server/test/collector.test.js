@@ -22,7 +22,7 @@ test("parses the log lines Longhouse depends on", () => {
   assert.equal(parseLine("10/21/2026 19:40:01: Something unrelated"), null);
 });
 
-test("lloesche/valheim-server lines on Valheim 1.0", () => {
+test("supervisord-prefixed lines on Valheim 1.0", () => {
   const pre = "Oct 21 09:08:16 supervisord: valheim-server 10/21/2026 09:08:16: ";
   assert.deepEqual(parseLine(pre + "Got character ZDOID from Big Bjorn : -1234567:1"), { type: "spawn", name: "Big Bjorn" });
   assert.deepEqual(parseLine(pre + "Got connection SteamID 76561198000000001"), { type: "connect", id: "76561198000000001" });

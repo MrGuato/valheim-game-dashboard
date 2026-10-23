@@ -8,10 +8,10 @@ const VALHEIM_PREFIX = /^\d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2}:\d{2}:\s*/;
 const BEPINEX_PREFIX = /^\[\w+\s*:\s*[^\]]+\]\s*/;
 
 const PATTERNS = [
-  // the MrGuato/Valheim_Game_Server entrypoint announces each (re)start and stop
+  // the MrGuato/valheim-game-server entrypoint announces each (re)start and stop
   ["start", /^\[valheim\] Starting: name='(.*)' world='(.*)' port=(\d+)/, (m) => ({ name: m[1], world: m[2], port: Number(m[3]) })],
   ["stop", /^\[valheim\] (?:Shutdown requested|Server exited|Server stopped)/, () => ({})],
-  // every server start loads the world (lloesche/valheim-server restarts the game inside the container)
+  // every server start loads the world (also catches a game restart inside a running container)
   ["start", /ZNet\.LoadWorld: (\S+)/, (m) => ({ name: null, world: m[1] })],
   ["version", /Valheim version:\s*(?:[a-z]-)?(\d+\.\d+\.\d+)/, (m) => ({ version: m[1] })],
   ["version", /Console: Valheim [a-z]-(\d+\.\d+\.\d+)/, (m) => ({ version: m[1] })], // 1.0+
