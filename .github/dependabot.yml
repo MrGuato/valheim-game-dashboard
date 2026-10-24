@@ -10,3 +10,7 @@ updates:
     schedule:
       interval: "weekly"
     labels: ["dependencies"]
+    ignore:
+      # odd Node majors never become LTS; stay on even (LTS) releases
+      - dependency-name: "node"
+        versions: ["25.x", "27.x", "29.x"]
