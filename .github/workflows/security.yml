@@ -34,6 +34,10 @@ jobs:
 
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@v0.36.0
+        env:
+          # fall back to other mirrors when one of them is down
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db,mirror.gcr.io/aquasec/trivy-db
+          TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db,ghcr.io/aquasecurity/trivy-java-db
         with:
           scan-type: fs
           scan-ref: .
@@ -70,6 +74,10 @@ jobs:
 
       - name: Trivy image scan
         uses: aquasecurity/trivy-action@v0.36.0
+        env:
+          # fall back to other mirrors when one of them is down
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db,ghcr.io/aquasecurity/trivy-db,mirror.gcr.io/aquasec/trivy-db
+          TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db,ghcr.io/aquasecurity/trivy-java-db
         with:
           image-ref: longhouse:scan
           format: sarif
