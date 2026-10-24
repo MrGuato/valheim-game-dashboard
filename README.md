@@ -26,7 +26,6 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/MrGuato/valheim-game-dashboard" alt="License: MIT"></a>
   <a href="https://github.com/MrGuato/valheim-game-dashboard/commits/main"><img src="https://img.shields.io/github/last-commit/MrGuato/valheim-game-dashboard" alt="Last commit"></a>
   <a href="https://github.com/MrGuato/valheim-game-dashboard/pkgs/container/valheim-game-dashboard"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2Fipitio%2Fbackage%2Fraw%2Findex%2FMrGuato%2Fvalheim-game-dashboard%2Fvalheim-game-dashboard.json&query=%24.downloads&label=pulls&logo=docker&logoColor=white&color=2496ed" alt="Container pulls"></a>
-  <a href="https://github.com/MrGuato/valheim-game-dashboard"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FMrGuato%2Fvalheim-game-dashboard%2Ftraffic%2Ftraffic.json&query=%24.views_total&label=visits&logo=github&logoColor=white&color=6e5494&cacheSeconds=3600" alt="Repository visits"></a>
 </p>
 
 <p align="center">
