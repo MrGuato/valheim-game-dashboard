@@ -31,7 +31,7 @@
         <a href="docs.html" aria-current="page">Docs</a>
       </nav>
       <div class="topbar-right">
-        <span class="badge">v0.1.0</span>
+        <span class="badge">v0.2.0</span>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode"></button>
       </div>
     </div>
@@ -86,7 +86,7 @@
         <div class="features">
           <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/></svg></span><b>Live server status</b><span>Online state, player count, uptime, version, world day, time of day and weather.</span></div>
           <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4 4 5-6 5 6 4-4-2 12H5z"/></svg></span><b>Boss progression</b><span>All seven forsaken, which day each fell and who was there.</span></div>
-          <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/></svg></span><b>Armory-style profiles</b><span>Each Viking drawn with their hair, beard and gear, surrounded by their equipment slots, plus vitals, food, skills and lifetime stats.</span></div>
+          <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/></svg></span><b>Armory-style profiles</b><span>Each Viking as a 3D voxel figure in their own hair, beard and gear that you can drag to turn, surrounded by their equipment slots, plus vitals, food, skills and lifetime stats.</span></div>
           <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><b>Hall of records</b><span>Leaderboards for kills, deaths, building and distance travelled.</span></div>
           <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><b>World stats</b><span>Most-eaten food, materials gathered and creatures slain, filterable by biome.</span></div>
           <div class="feature"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><b>Activity</b><span>A "when we play" heatmap and a live feed of joins, deaths, raids and boss kills.</span></div>
@@ -317,7 +317,7 @@ git check-ignore .env data/</pre>
         <h3>Panels</h3>
         <p>Every panel is rendered by its own function in <code>assets/dashboard.js</code> (<code>renderBosses</code>, <code>renderLeaders</code>, and so on) and hides itself when the snapshot has no data for it. Adding one means one function and one container in <code>index.html</code>.</p>
         <h3>Character figures</h3>
-        <p>Figures are drawn by <code>assets/figure.js</code> from a player's <code>appearance</code> (body type, skin, hair, beard) and <code>equipment</code>. Armor colors are matched by keywords in the item name, so new gear sets only need a line in its <code>MATERIALS</code> table.</p>
+        <p>Profiles show a 3D voxel figure drawn by <code>assets/voxel.js</code> with plain WebGL (no libraries). It's built from a player's <code>appearance</code> (body type, skin, hair, beard) and <code>equipment</code>, shaded with baked ambient occlusion and a thin line along every voxel edge, which is what gives it the pixel-art look. Drag it or use the arrow keys to turn it, and double-click to reset. The small portraits, and browsers without WebGL, use the flat SVG figure from <code>assets/figure.js</code>. Both read gear the same way: armor colors are matched by keywords in the item name, so a new gear set only needs a line in the <code>MATERIALS</code> table in <code>figure.js</code>.</p>
       </section>
 
       <!-- develop -->
@@ -331,7 +331,7 @@ git check-ignore .env data/</pre>
 <p class="code-label">Repository layout</p>
 <pre>index.html              <span class="c">dashboard</span>
 docs.html               <span class="c">this page</span>
-assets/                 <span class="c">styles, renderer, character figures, mock snapshot</span>
+assets/                 <span class="c">styles, renderer, SVG and 3D voxel figures, mock snapshot</span>
 server/                 <span class="c">collector: logs, Steam query, world save, HTTP</span>
 server/test/            <span class="c">log pattern and state tests</span>
 deploy/                 <span class="c">compose file with Docker proxy and Cloudflare Tunnel</span>
@@ -360,8 +360,8 @@ Dockerfile              <span class="c">ghcr.io/mrguato/valheim-game-dashboard</
           <p>No. Without mods you get status, who's online, sessions, deaths, raids and the heatmap. The character figure, gear, biome, health, kills and pieces need the server plugin, which goes on the server only.</p>
         </details>
         <details>
-          <summary>Why drawn figures instead of the real 3D models?</summary>
-          <p>Valheim's character models are game assets that can't be redistributed, and there's no public model viewer for them the way there is for some other games. Longhouse draws its own figures from the same appearance and gear data instead. </p>
+          <summary>Why voxel figures instead of Valheim's real character models?</summary>
+          <p>Valheim's character models and textures are game assets that can't be redistributed, and there's no public model viewer for them the way there is for some other games. So Longhouse builds its own pixel-art Vikings out of voxels from the same appearance and gear data. They look the part, and no game files are involved.</p>
         </details>
         <details>
           <summary>Does it work with crossplay servers?</summary>

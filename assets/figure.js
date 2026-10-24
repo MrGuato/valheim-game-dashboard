@@ -212,5 +212,10 @@
     return `<svg class="${opts.className || "figure"}" viewBox="${vb}" role="img" aria-label="${label.replace(/"/g, "&quot;")}" xmlns="http://www.w3.org/2000/svg">${parts.join("")}</svg>`;
   }
 
-  window.LonghouseFigure = { render: figure };
+  window.LonghouseFigure = {
+    render: figure,
+    // shared with the 3D voxel figure (voxel.js) so both read gear the same way
+    looks: { DEFAULT_LOOK, UNKNOWN_LOOK },
+    palette: { MATERIALS, CAPES, SHIELDS, pick, shade, weaponKind, helmetKind }
+  };
 })();

@@ -267,6 +267,7 @@
           ${lifetime.map(([k, val]) => `<div><span class="eyebrow">${k}</span><div class="val num">${val}</div></div>`).join("")}
         </div>
       </div>` : ""}`;
+    if (window.LonghouseVoxel) window.LonghouseVoxel.mount(el.querySelector(".arm-figure"), p, { unknown: !p.appearance });
   }
 
   // ---------- records ----------
